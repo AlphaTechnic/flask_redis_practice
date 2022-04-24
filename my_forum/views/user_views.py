@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, make_response, jsonify, g, redirect, url_for
-from flask_api import FlaskAPI, status
+from flask_api import status
 
 from my_forum.forms import UserCreateForm, UserLoginForm
 from my_forum.models import User
