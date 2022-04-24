@@ -8,7 +8,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
 
     # 다른 테이블과의 관계
-    posts = db.relationship('Post', backref='user', lazy='dynamic')
+    boards = db.relationship('Board', backref='user', lazy='dynamic')
 
     def __repr__(self):
         return f"user{self.id}/{self.username[:10]}"
@@ -20,6 +20,7 @@ class Board(db.Model):
     create_date = db.Column(db.DateTime(), nullable=False)
 
     # 다른 테이블과의 관계
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     posts = db.relationship('Post', backref='board', lazy='dynamic')
 
     def __repr__(self):
@@ -34,7 +35,6 @@ class Post(db.Model):
     create_date = db.Column(db.DateTime(), nullable=False)
 
     # 다른 테이블과의 관계
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     board_id = db.Column(db.Integer, db.ForeignKey('board.id', ondelete='CASCADE'))
 
     def __repr__(self):
