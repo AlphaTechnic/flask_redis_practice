@@ -2,12 +2,16 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
+import redis
 
 import config
 
 db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
+
+# make redis
+redis_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
 def create_app():

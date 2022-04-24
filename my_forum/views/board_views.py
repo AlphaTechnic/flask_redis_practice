@@ -1,12 +1,10 @@
-from flask import Blueprint, request, session, make_response, jsonify, g, redirect, url_for
+from flask import Blueprint, request, g
 from flask_api import status
 from .validation import is_authenticated
 
-from my_forum.forms import UserCreateForm, UserLoginForm
-from my_forum.models import User, Board
-from werkzeug.security import generate_password_hash, check_password_hash
+from my_forum.models import Board
 from my_forum import db
-from datetime import datetime, timedelta
+from datetime import datetime
 
 g_board_page_size = 5
 g_post_page_size = 10

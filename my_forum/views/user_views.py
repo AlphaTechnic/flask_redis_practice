@@ -1,10 +1,10 @@
-from flask import Blueprint, request, session, make_response, jsonify, g, redirect, url_for
+from flask import Blueprint, request, make_response, jsonify, g, redirect, url_for
 from flask_api import status
 
 from my_forum.forms import UserCreateForm, UserLoginForm
 from my_forum.models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from my_forum import db
+from my_forum import db, redis_cache
 from datetime import datetime, timedelta
 
 bp = Blueprint('user', __name__, url_prefix='/')
@@ -16,13 +16,15 @@ def load_logged_in_user():
     if request.endpoint in allowed_routes:
         return
 
+    id_in_cookie = int(request.cookies.get("id"))
     email_in_cookie = request.cookies.get("email")
-    email_in_server_session = session.get(email_in_cookie)
-    if email_in_server_session is None:
+    # email_in_server_session = session.get(email_in_cookie)
+    email_in_server_session = redis_cache.get(id_in_cookie)
+    if email_in_cookie != email_in_server_session:
         g.user = None
         return redirect(url_for('user.login'))
     else:
-        g.user = User.query.filter_by(email=email_in_server_session).first()
+        g.user = User.query.get(id_in_cookie)
 
 
 @bp.route('/signup/', methods=['POST'])
@@ -75,9 +77,10 @@ def login():
         body["message"] = "존재하지 않는 사용자"
         return body
 
-    def save_in_server_session(user):
+    def save_in_redis(user):
         # session.clear()
-        session[user.email] = user.email
+        # session[user.email] = user.email
+        redis_cache.set(user.id, user.email, ex=timedelta(hours=24))
 
     def response_with_cookie(user):
         body = make_resp_body(user_in_db=True, valid_password=True)
@@ -85,6 +88,7 @@ def login():
 
         expire_time = datetime.now() + timedelta(days=1)
         response.set_cookie("email", value=user.email, expires=expire_time, httponly=True)
+        response.set_cookie("id", value=str(user.id), expires=expire_time, httponly=True)
         return response
 
     if request.method == 'GET':
@@ -100,7 +104,7 @@ def login():
             body = make_resp_body(user_in_db=True, valid_password=False)
             return body, status.HTTP_400_BAD_REQUEST
 
-        save_in_server_session(user)
+        save_in_redis(user)
         response = response_with_cookie(user)
         return response
 
@@ -109,5 +113,5 @@ def login():
 
 @bp.route('/logout/', methods=['GET'])
 def logout():
-    session.pop(g.user.id)
+    redis_cache.delete(g.user.id)
     return {"message": "로그아웃 성공", "data": {}}, status.HTTP_200_OK
