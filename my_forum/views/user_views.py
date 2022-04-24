@@ -16,12 +16,13 @@ def load_logged_in_user():
     if request.endpoint in allowed_routes:
         return
 
-    email = session.get('session_id')
-    if email is None:
+    email_in_cookie = request.cookies.get("email")
+    email_in_server_session = session.get(email_in_cookie)
+    if email_in_server_session is None:
         g.user = None
         return redirect(url_for('user.login'))
     else:
-        g.user = User.query.filter_by(email=email).first()
+        g.user = User.query.filter_by(email=email_in_server_session).first()
 
 
 @bp.route('/signup/', methods=['POST'])
@@ -52,11 +53,11 @@ def signup():
         if not user:
             create_user(form)
             body = make_resp_body(success=True)
-            return body, status.HTTP_200_OK
+            return body, status.HTTP_201_CREATED
         body = make_resp_body(success=False)
         return body, status.HTTP_409_CONFLICT
 
-    return {"message": "유효하지 않은 요청"}, status.HTTP_400_BAD_REQUEST
+    return {"message": "유효하지 않은 요청", "data": {}}, status.HTTP_400_BAD_REQUEST
 
 
 @bp.route('/login/', methods=['GET', 'POST'])
@@ -75,19 +76,19 @@ def login():
         return body
 
     def save_in_server_session(user):
-        session.clear()
-        session['session_id'] = user.email
+        # session.clear()
+        session[user.email] = user.email
 
     def response_with_cookie(user):
         body = make_resp_body(user_in_db=True, valid_password=True)
         response = make_response(jsonify(body), status.HTTP_200_OK)
 
         expire_time = datetime.now() + timedelta(days=1)
-        response.set_cookie("session_id", value=user.email, expires=expire_time, httponly=True)
+        response.set_cookie("email", value=user.email, expires=expire_time, httponly=True)
         return response
 
     if request.method == 'GET':
-        return {"message": "로그인 화면"}, status.HTTP_200_OK
+        return {"message": "로그인 화면", "data": {}}, status.HTTP_200_OK
 
     form = UserLoginForm()
     if request.method == 'POST' and form.validate():
@@ -103,10 +104,10 @@ def login():
         response = response_with_cookie(user)
         return response
 
-    return {"message": "유효하지 않은 요청"}, status.HTTP_400_BAD_REQUEST
+    return {"message": "유효하지 않은 요청", "data": {}}, status.HTTP_400_BAD_REQUEST
 
 
 @bp.route('/logout/', methods=['GET'])
 def logout():
-    session.clear()
-    return {"message": "로그아웃 성공"}, status.HTTP_200_OK
+    session.pop(g.user.id)
+    return {"message": "로그아웃 성공", "data": {}}, status.HTTP_200_OK
