@@ -5,17 +5,15 @@
 ## Environment
 
 - OS
-  - macOS
+  - windows
 
 - python --version
-  - python 3.9.10
+  - python 3.7
 
 - DB
   - postgresql
 
 - run on localhost
-- 
-- 
 
 ## File Structure
 
@@ -48,7 +46,7 @@
 - Run a virtual environment
 
   ```shell
-  (myvenv) ~/elice_assignment $ source myvenv/bin/activate
+  (myvenv) ~/elice_assignment $ source myvenv/Scripts/activate
   ```
 
 - Install requirements
@@ -65,16 +63,15 @@
     (myvenv) ~$ python3 -m pip install --upgrade pip
     ```
 
-    
 
 ## Usage
 
 ```shell
-(myvenv) ~/elice_assignment $ export FLASK_APP=my_forum
+(myvenv) ~/elice_assignment $ set FLASK_APP=my_forum
 ```
 
 ```shell
-(myvenv) ~/elice_assignment $ export FLASK_ENV=development
+(myvenv) ~/elice_assignment $ set FLASK_ENV=development
 ```
 
 ```shell
