@@ -1,5 +1,6 @@
 from flask import Blueprint, request, session, make_response, jsonify, g, redirect, url_for
 from flask_api import status
+from .validation import is_authenticated
 
 from my_forum.forms import UserCreateForm, UserLoginForm
 from my_forum.models import User, Board
@@ -23,12 +24,13 @@ def handle_board():
         db.session.commit()
         return {"message": f"[{board_name}] 생성 성공", "data": {}}, status.HTTP_201_CREATED
 
-    elif request.method == 'PATCH':
+    if request.method == 'PATCH':
         board_id_to_delete = request.get_json()['id']
+        if not is_authenticated(board_id_to_delete):
+            return {"message": "수정 권한 없음", "data": {}}, status.HTTP_403_FORBIDDEN
+
         board_name = request.get_json()['name']
         board = Board.query.get(board_id_to_delete)
-        if board.user_id != g.user.id:
-            return {"message": "수정 권한 없음", "data": {}}, status.HTTP_403_FORBIDDEN
 
         prev_name = board.name
         board.name = board_name
@@ -37,12 +39,12 @@ def handle_board():
         db.session.commit()
         return {"message": f"[{prev_name}]->[{board_name}] 수정 성공", "data": {}}, status.HTTP_200_OK
 
-    elif request.method == 'DELETE':
+    if request.method == 'DELETE':
         id_to_delete = request.get_json()['id']
+        if not is_authenticated(id_to_delete):
+            return {"message": "삭제 권한 없음", "data": {}}, status.HTTP_403_FORBIDDEN
         board = Board.query.get(id_to_delete)
         name_to_delete = board.name
-        if board.user_id != g.user.id:
-            return {"message": "삭제 권한 없음", "data": {}}, status.HTTP_403_FORBIDDEN
 
         db.session.delete(board)
         db.session.commit()
@@ -58,7 +60,6 @@ def get_boards():
         body["message"] = "게시판 목록들 요청 성공"
         body["data"] = dict()
         body["data"]["limit"] = g_board_page_size
-
         body["data"]["pages"] = make_pages(user)
         return body
 
@@ -126,11 +127,10 @@ def get_posts(board_id):
         pages.append(page)
         return end
 
-    board = Board.query.get(board_id)
-    if board.user_id != g.user.id:
-        return {"message": "조회 권한 없음", "data": {}}, status.HTTP_403_FORBIDDEN
-
     if request.method == "GET":
+        if is_authenticated(board_id):
+            return {"message": "조회 권한 없음", "data": {}}, status.HTTP_403_FORBIDDEN
+        board = Board.query.get(board_id)
         resp = make_resp_body(board)
         return resp, status.HTTP_200_OK
 
