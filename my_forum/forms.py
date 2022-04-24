@@ -13,7 +13,7 @@ class UserCreateForm(FlaskForm):
     confirm_password = PasswordField("비밀번호 확인",
                                      validators=[DataRequired(), EqualTo("password")])
 
-    # username = StringField("아이디")
-    # email = StringField("이메일")
-    # password = PasswordField("비밀번호")
-    # confirm_password = PasswordField("비밀번호확인")
+
+class UserLoginForm(FlaskForm):
+    email = StringField('이메일', validators=[DataRequired(), Email()])
+    password = PasswordField('비밀번호', validators=[DataRequired()])
