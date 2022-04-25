@@ -6,13 +6,14 @@
 
 - OS
   - windows
-
 - python --version
   - python 3.7
-
+- in-memory cache
+  - redis
+  - on local host
+    - https://github.com/microsoftarchive/redis/releases
 - DB
   - postgresql
-
 - run on localhost
 
 ## File Structure
