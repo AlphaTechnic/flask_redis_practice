@@ -10,7 +10,7 @@ class UserCreateForm(FlaskForm):
                         validators=[DataRequired(), Email()])
     password = PasswordField("비밀번호",
                              validators=[DataRequired(), Length(min=4, max=20)])
-    confirm_password = PasswordField("비밀번호 확인",
+    confirmPassword = PasswordField("비밀번호 확인",
                                      validators=[DataRequired(), EqualTo("password")])
 
 
