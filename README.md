@@ -22,17 +22,19 @@
 ```
 ├── my_forum/
 │      ├─ __init__.py
-│      ├─ models.py
 │      ├─ forms.py
-│      ├─ views/
-│      │   └─ main_views.py
-│      ├─ static/
-│      │   └─ style.css
-│      └─ templates/
-│            └─ index.html
-├── requirements.txt
+│      ├─ models.py
+│      ├─ validation.py
+│      └─ views/
+│          ├─ board_article_views.py
+│          ├─ board_views.py
+│          ├─ dashboard_views.py
+│          └─ user_views.py
+├── .flaskenv
+├── .gitignore
+├── config.py
 ├── README.md
-└── config.py
+└── requirements.txt
 ```
 
 
@@ -138,10 +140,6 @@ for board_id in range(1, 30 * 20 + 1):
       post = Post(board_id=board_id, title=f"title{post_id}", content="dummy", create_date=datetime.now())
       db.session.add(post)
 db.session.commit()
-```
-
-```
-[refactor] username은 중복 허용하도록 바꿈. 즉, unique 설정을 제거
 ```
 
 - signup (`POST`)
