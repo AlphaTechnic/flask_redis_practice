@@ -90,7 +90,6 @@ def login():
         response.set_cookie("email", value=user.email, expires=expire_time, httponly=True)
         response.set_cookie("id", value=str(user.id), expires=expire_time, httponly=True)
         return response
-    print("!@!@#!@#!@#!@#")
     if request.method == 'GET':
         return {"message": "로그인 화면", "data": {}}, status.HTTP_200_OK
 
