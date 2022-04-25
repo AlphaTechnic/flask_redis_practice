@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_api import status
-from .validation import is_authenticated
+from my_forum.validation import is_authenticated
 
 from my_forum.models import Post
 from my_forum import db
