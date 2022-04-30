@@ -5,36 +5,31 @@
 ## Environment
 
 - OS
-  - windows
+  - macOS
 - python --version
-  - python 3.7
-- in-memory cache
-  - redis
-  - on local host
-    - redis 설치 : https://github.com/microsoftarchive/redis/releases
-- DB (**mission failed**)
-  - sqlite
-  - **should move to postgresql**
+  - python 3.9.10
+- DB
+  - postgresqld
 - run on localhost
+- 
+- 
 
 ## File Structure
 
 ```
 ├── my_forum/
 │      ├─ __init__.py
-│      ├─ forms.py
 │      ├─ models.py
-│      ├─ validation.py
-│      └─ views/
-│          ├─ board_article_views.py
-│          ├─ board_views.py
-│          ├─ dashboard_views.py
-│          └─ user_views.py
-├── .flaskenv
-├── .gitignore
-├── config.py
+│      ├─ forms.py
+│      ├─ views/
+│      │   └─ main_views.py
+│      ├─ static/
+│      │   └─ style.css
+│      └─ templates/
+│            └─ index.html
+├── requirements.txt
 ├── README.md
-└── requirements.txt
+└── config.py
 ```
 
 
@@ -50,7 +45,7 @@
 - Run a virtual environment
 
   ```shell
-  (myvenv) ~/elice_assignment $ source myvenv/Scripts/activate
+  (myvenv) ~/elice_assignment $ source myvenv/bin/activate
   ```
 
 - Install requirements
@@ -67,15 +62,16 @@
     (myvenv) ~$ python3 -m pip install --upgrade pip
     ```
 
+    
 
 ## Usage
 
 ```shell
-(myvenv) ~/elice_assignment $ set FLASK_APP=my_forum
+(myvenv) ~/elice_assignment $ export FLASK_APP=my_forum
 ```
 
 ```shell
-(myvenv) ~/elice_assignment $ set FLASK_ENV=development
+(myvenv) ~/elice_assignment $ export FLASK_ENV=development
 ```
 
 ```shell
@@ -98,83 +94,12 @@
 (myvenv) ~/elice_assignment $ flask db upgrade
 ```
 
-## ERD
+## Wrap up
 
-![erdiagram](./_imgs_for_doc/erdiagram.png)
-
-## API 명세
-
-- https://app.swaggerhub.com/apis-docs/AlphaTechnic/Board/1.0.0
-
-## 인증 / 인가 flow
-
-![ERDForum.drawio](./_imgs_for_doc/ERDForum.drawio.png)
-
-## 주요 test
-
-- dummy user 30명 생성하기
-
-```python
-from my_forum.models import User, Board, Post
-from datetime import datetime
-from my_forum import db
-for user_id in range(1, 31):
-	user = User(username=f"user{user_id}", password="abc1234", email=f"abc{user_id}@gmail.com")
-	db.session.add(user)
-```
-
-- 유저마다 dummy 게시판 5개 만들기
-
-```python
-for user_id in range(1, 31):
-  for board_id in range(1, 21):
-      board = Board(user_id=user_id, name=f"board{board_id}", create_date=datetime.now())
-      db.session.add(board)
-```
-
-- 유저마다 각 board에 post 3개씩 생성하기
-
-```python
-for board_id in range(1, 30 * 20 + 1):
-    for post_id in range(1, 4):
-      post = Post(board_id=board_id, title=f"title{post_id}", content="dummy", create_date=datetime.now())
-      db.session.add(post)
-db.session.commit()
-```
-
-- signup (`POST`)
-
-```python
-# http://127.0.0.1:5000/signup/
-    
-{
-    "username": "엘리스",
-    "email": "cc1234@gmail.com",
-    "password": "Sbcga1234",
-    "confirmPassword": "Sbcga1234"
-}
-```
-
-- login (`POST`)
-
-```python
-# http://127.0.0.1:5000/login/
-
-{
-	"email": "cc1234@gmail.com",
-	"password": "Sbcga1234"
-}
-```
-
-- board 생성 (`POST`)
-
-```python
-# http://127.0.0.1:5000/board/
-
-{
-	"name": "게시판제목!"
-}
-```
-
-
+- db에 constraint로 길이 제한을 걸었으니, forms.py에도 반영해야함
+- 로그인 로직
+  - 방법1 : HMAC을 써서 쿠키를 못 바꾸게
+  - 방법2 : redis에 넣을 때 random string을 key로 써서 그 key를 쿠키에 넣고, redis에도 넣고 한다.
+- pagination은 특정 page에 대한 요청임
+  - flask ORM에서 limit과 offset을 쓰면 됨
 
