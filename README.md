@@ -5,31 +5,36 @@
 ## Environment
 
 - OS
-  - macOS
+  - windows
 - python --version
-  - python 3.9.10
-- DB
-  - postgresqld
+  - python 3.7
+- in-memory cache
+  - redis
+  - on local host
+    - redis 설치 : https://github.com/microsoftarchive/redis/releases
+- DB (**mission failed**)
+  - sqlite
+  - **should move to postgresql**
 - run on localhost
-- 
-- 
 
 ## File Structure
 
 ```
 ├── my_forum/
 │      ├─ __init__.py
-│      ├─ models.py
 │      ├─ forms.py
-│      ├─ views/
-│      │   └─ main_views.py
-│      ├─ static/
-│      │   └─ style.css
-│      └─ templates/
-│            └─ index.html
-├── requirements.txt
+│      ├─ models.py
+│      ├─ validation.py
+│      └─ views/
+│          ├─ board_article_views.py
+│          ├─ board_views.py
+│          ├─ dashboard_views.py
+│          └─ user_views.py
+├── .flaskenv
+├── .gitignore
+├── config.py
 ├── README.md
-└── config.py
+└── requirements.txt
 ```
 
 
@@ -45,7 +50,7 @@
 - Run a virtual environment
 
   ```shell
-  (myvenv) ~/elice_assignment $ source myvenv/bin/activate
+  (myvenv) ~/elice_assignment $ source myvenv/Scripts/activate
   ```
 
 - Install requirements
@@ -62,16 +67,15 @@
     (myvenv) ~$ python3 -m pip install --upgrade pip
     ```
 
-    
 
 ## Usage
 
 ```shell
-(myvenv) ~/elice_assignment $ export FLASK_APP=my_forum
+(myvenv) ~/elice_assignment $ set FLASK_APP=my_forum
 ```
 
 ```shell
-(myvenv) ~/elice_assignment $ export FLASK_ENV=development
+(myvenv) ~/elice_assignment $ set FLASK_ENV=development
 ```
 
 ```shell
@@ -92,6 +96,84 @@
 
 ```shell
 (myvenv) ~/elice_assignment $ flask db upgrade
+```
+
+## ERD
+
+![erdiagram](./_imgs_for_doc/erdiagram.png)
+
+## API 명세
+
+- https://app.swaggerhub.com/apis-docs/AlphaTechnic/Board/1.0.0
+
+## 인증 / 인가 flow
+
+![ERDForum.drawio](./_imgs_for_doc/ERDForum.drawio.png)
+
+## 주요 test
+
+- dummy user 30명 생성하기
+
+```python
+from my_forum.models import User, Board, Post
+from datetime import datetime
+from my_forum import db
+for user_id in range(1, 31):
+	user = User(username=f"user{user_id}", password="abc1234", email=f"abc{user_id}@gmail.com")
+	db.session.add(user)
+```
+
+- 유저마다 dummy 게시판 5개 만들기
+
+```python
+for user_id in range(1, 31):
+  for board_id in range(1, 21):
+      board = Board(user_id=user_id, name=f"board{board_id}", create_date=datetime.now())
+      db.session.add(board)
+```
+
+- 유저마다 각 board에 post 3개씩 생성하기
+
+```python
+for board_id in range(1, 30 * 20 + 1):
+    for post_id in range(1, 4):
+      post = Post(board_id=board_id, title=f"title{post_id}", content="dummy", create_date=datetime.now())
+      db.session.add(post)
+db.session.commit()
+```
+
+- signup (`POST`)
+
+```python
+# http://127.0.0.1:5000/signup/
+    
+{
+    "username": "엘리스",
+    "email": "cc1234@gmail.com",
+    "password": "Sbcga1234",
+    "confirmPassword": "Sbcga1234"
+}
+```
+
+- login (`POST`)
+
+```python
+# http://127.0.0.1:5000/login/
+
+{
+	"email": "cc1234@gmail.com",
+	"password": "Sbcga1234"
+}
+```
+
+- board 생성 (`POST`)
+
+```python
+# http://127.0.0.1:5000/board/
+
+{
+	"name": "게시판제목!"
+}
 ```
 
 ## Wrap up
