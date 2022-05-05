@@ -43,14 +43,14 @@
 - Make a virtual environment
 
   ```shell
-  $ cd flask_project
+  $ cd flask_redis_practice
   $ python3 -m venv myvenv
   ```
 
 - Run a virtual environment
 
   ```shell
-  (myvenv) ~/flask_project $ source myvenv/Scripts/activate
+  (myvenv) ~/flask_redis_practice $ source myvenv/Scripts/activate
   ```
 
 - Install requirements
@@ -71,15 +71,15 @@
 ## Usage
 
 ```shell
-(myvenv) ~/flask_project $ set FLASK_APP=my_forum
+(myvenv) ~/flask_redis_practice $ set FLASK_APP=my_forum
 ```
 
 ```shell
-(myvenv) ~/flask_project $ set FLASK_ENV=development
+(myvenv) ~/flask_redis_practice $ set FLASK_ENV=development
 ```
 
 ```shell
-(myvenv) ~/flask_project $ flask run
+(myvenv) ~/flask_redis_practice $ flask run
 ```
 
 ## Database managing
@@ -88,14 +88,14 @@
   - 실행하면 **작업 파일이 생성**된다.
 
 ```shell
-(myvenv) ~/flask_project $ flask db migrate
+(myvenv) ~/flask_redis_practice $ flask db migrate
 ```
 
 - 모델의 변경 내용을 실제 데이터베이스에 적용할 때 사용
   - 위에서 생성된 작업 파일을 실행하여 **데이터베이스를 변경**한다.
 
 ```shell
-(myvenv) ~/flask_project $ flask db upgrade
+(myvenv) ~/flask_redis_practice $ flask db upgrade
 ```
 
 ## ERD
