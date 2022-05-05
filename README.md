@@ -1,4 +1,4 @@
-# Flask Project
+# Flask, Redis Practice
 
 
 
