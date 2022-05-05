@@ -1,4 +1,4 @@
-# Elice Assignment
+# Flask Project
 
 
 
@@ -12,7 +12,7 @@
   - redis
   - on local host
     - redis 설치 : https://github.com/microsoftarchive/redis/releases
-- DB (**mission failed**)
+- DB
   - sqlite
   - **should move to postgresql**
 - run on localhost
@@ -43,14 +43,14 @@
 - Make a virtual environment
 
   ```shell
-  $ cd elice_assignment
+  $ cd flask_project
   $ python3 -m venv myvenv
   ```
 
 - Run a virtual environment
 
   ```shell
-  (myvenv) ~/elice_assignment $ source myvenv/Scripts/activate
+  (myvenv) ~/flask_project $ source myvenv/Scripts/activate
   ```
 
 - Install requirements
@@ -71,15 +71,15 @@
 ## Usage
 
 ```shell
-(myvenv) ~/elice_assignment $ set FLASK_APP=my_forum
+(myvenv) ~/flask_project $ set FLASK_APP=my_forum
 ```
 
 ```shell
-(myvenv) ~/elice_assignment $ set FLASK_ENV=development
+(myvenv) ~/flask_project $ set FLASK_ENV=development
 ```
 
 ```shell
-(myvenv) ~/elice_assignment $ flask run
+(myvenv) ~/flask_project $ flask run
 ```
 
 ## Database managing
@@ -88,14 +88,14 @@
   - 실행하면 **작업 파일이 생성**된다.
 
 ```shell
-(myvenv) ~/elice_assignment $ flask db migrate
+(myvenv) ~/flask_project $ flask db migrate
 ```
 
 - 모델의 변경 내용을 실제 데이터베이스에 적용할 때 사용
   - 위에서 생성된 작업 파일을 실행하여 **데이터베이스를 변경**한다.
 
 ```shell
-(myvenv) ~/elice_assignment $ flask db upgrade
+(myvenv) ~/flask_project $ flask db upgrade
 ```
 
 ## ERD
@@ -148,7 +148,7 @@ db.session.commit()
 # http://127.0.0.1:5000/signup/
     
 {
-    "username": "엘리스",
+    "username": "홍길동",
     "email": "cc1234@gmail.com",
     "password": "Sbcga1234",
     "confirmPassword": "Sbcga1234"
@@ -178,10 +178,10 @@ db.session.commit()
 
 ## Wrap up
 
-- db에 constraint로 길이 제한을 걸었으니, forms.py에도 반영해야함
+- db에 constraint로 길이 제한을 걸었으니, `forms.py`에도 반영해야함
 - 로그인 로직
-  - 방법1 : HMAC을 써서 쿠키를 못 바꾸게
+  - 방법1 : `HMAC`을 써서 쿠키를 못 바꾸게
   - 방법2 : redis에 넣을 때 random string을 key로 써서 그 key를 쿠키에 넣고, redis에도 넣고 한다.
 - pagination은 특정 page에 대한 요청임
-  - flask ORM에서 limit과 offset을 쓰면 됨
+  - flask ORM에서 `limit`과 `offset`을 쓰면 됨
 
